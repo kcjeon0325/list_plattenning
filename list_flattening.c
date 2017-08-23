@@ -5,7 +5,7 @@ typedef strcut nodeT {
 	struct nodeT *child;
 } node;
 
-int append_child(node **tail, note *child)
+int append_child(node **tail, node *child)
 {
 	(*tail)->next = child;
 	child->prev = *tail;
@@ -16,16 +16,43 @@ int append_child(node **tail, note *child)
 
 int list_flattening(node *head, node **tail)
 {
-	node *curr;
+	node *cur_node;
 
-	curr = head;
+	cur_node = head;
 
-	while(curr)
+	while(cur_node)
 	{
-		if(curr->child)
+		if(cur_node->child)
 		{
-			append_child(&tail, curr->child);
+			append_child(&tail, cur_node->child);
 		}
-		curr=curr->next;
+		cur_node=cur_node->next;
 	}
+}
+
+void seperate(node *head)
+{
+	node *cur_node = head;
+	while(cur_node)
+	{
+		if(cur_node->child)
+		{
+			cur_node->child->prev->next = NULL;
+			cur_node->child->prev = NULL;
+			seperate(cur_node);
+
+		}
+		cur_node = cur_node->next;
+	}	
+}
+
+int list_unflattening(node *head, node **tail)
+{
+	node *cur_node = head;
+	
+	seperate(head);
+	while(cur_node->next) cur_node=cur_node->next;
+	*tail = cur_node;
+
+	return 1;
 }
